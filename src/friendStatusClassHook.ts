@@ -1,25 +1,5 @@
 import { HookableComponent } from "./HookableComponent";
-
-type Getter<T> = () => T;
-type Setter<T> = (t: T) => void;
-
-function useState<T>(component: HookableComponent, def?: T): [Getter<T>, Setter<T>]  {
-  const hookId = component.newHookId();
-  const stateKey = `hook-${hookId}`;
-  if (def) {
-    component.hookState[stateKey] = def;
-  }
-  const getter = () => component.hookState[stateKey];
-  const setter = (v: T) => {
-    component.hookState[stateKey] = v;
-    component.forceUpdate();
-  };
-  return [getter, setter];
-}
-
-function useEffect(component: HookableComponent, effect: () => void): void {
-  component.effects.push(effect);
-}
+import { Getter, useEffect, useState } from "./hooks";
 
 export function useFriendStatus(component: HookableComponent, friendID: string): Getter<string> {
   const [isOnline, setIsOnline] = useState(component, 'offline');
