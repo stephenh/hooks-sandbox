@@ -16,6 +16,7 @@ export class HookableComponent<P = {}, S = {}> extends React.Component<P, S> {
 
   private nextHookId = 0;
   public effects: Array<Function> = [];
+  private lastEffects: Array<Function> = [];
 
   constructor(props: any) {
     super(props);
@@ -24,8 +25,16 @@ export class HookableComponent<P = {}, S = {}> extends React.Component<P, S> {
   }
 
   public componentDidMount(): void {
-    // If e() returned a function, we need to unapply it on next go around
-    this.effects.forEach(e => e());
+    this.cancelAndRunEffects();
+  }
+
+  public componentDidUpdate(): void {
+    this.cancelAndRunEffects();
+  }
+
+  private cancelAndRunEffects(): void {
+    this.lastEffects.forEach(e => e());
+    this.lastEffects = this.effects.map(e => e()).filter(e => e instanceof Function);
   }
 
   public newHookId(): number {
