@@ -7,10 +7,13 @@ function useState<T>(component: HookableComponent, def?: T): [Getter<T>, Setter<
   const hookId = component.newHookId();
   const stateKey = `hook-${hookId}`;
   if (def) {
-    (component.state as any)[stateKey] = def;
+    component.hookState[stateKey] = def;
   }
-  const getter = () => (component.state && (component.state as any)[stateKey]);
-  const setter = (v: T) => component.setState({ [stateKey]: v });
+  const getter = () => component.hookState[stateKey];
+  const setter = (v: T) => {
+    component.hookState[stateKey] = v;
+    component.forceUpdate();
+  };
   return [getter, setter];
 }
 
