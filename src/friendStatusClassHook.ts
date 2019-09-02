@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { AppClass } from "./AppClass";
+import { HookableComponent } from "./AppClass";
 
 type Getter<T> = () => T;
 type Setter<T> = (t: T) => void;
@@ -11,11 +11,11 @@ function useState<T>(component: Component<any, any>, def?: T): [Getter<T>, Sette
   return [getter, setter];
 }
 
-function useEffect(component: AppClass, effect: () => void): void {
+function useEffect(component: HookableComponent, effect: () => void): void {
   component.effects.push(effect);
 }
 
-export function useFriendStatus(component: AppClass, friendID: string): Getter<string> {
+export function useFriendStatus(component: HookableComponent, friendID: string): Getter<string> {
   const [isOnline, setIsOnline] = useState(component, 'offline');
 
   function handleStatusChange(status: string) {

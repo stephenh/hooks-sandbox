@@ -2,9 +2,16 @@ import React from 'react';
 import './App.css';
 import { useFriendStatus } from "./friendStatusClassHook";
 
-export class AppClass extends React.Component {
 
+export class HookableComponent<P = {}, S = {}> extends React.Component<P, S> {
   public effects: Array<Function> = [];
+
+  public componentDidMount(): void {
+    this.effects.forEach(e => e());
+  }
+}
+
+export class AppClass extends HookableComponent {
   private isOnline = useFriendStatus(this, "id123");
 
   public render() {
@@ -14,9 +21,4 @@ export class AppClass extends React.Component {
       </header>
     </div>
   }
-
-  public componentDidMount(): void {
-    this.effects.forEach(e => e());
-  }
-
 }
