@@ -1,12 +1,11 @@
-import { Component } from 'react';
 import { HookableComponent } from "./AppClass";
 
 type Getter<T> = () => T;
 type Setter<T> = (t: T) => void;
 
-function useState<T>(component: Component<any, any>, def?: T): [Getter<T>, Setter<T>]  {
-  const hookId = (component as any).hookId = ((component as any).hookId || 0) + 1;
-  const getter = () => (component.state && component.state[`hook-${hookId}`]) || def;
+function useState<T>(component: HookableComponent, def?: T): [Getter<T>, Setter<T>]  {
+  const hookId = component.newHookId();
+  const getter = () => (component.state && (component.state as any)[`hook-${hookId}`]) || def;
   const setter = (v: T) => component.setState({ [`hook-${hookId}`]: v });
   return [getter, setter];
 }

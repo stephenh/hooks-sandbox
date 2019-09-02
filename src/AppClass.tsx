@@ -4,10 +4,15 @@ import { useFriendStatus } from "./friendStatusClassHook";
 
 
 export class HookableComponent<P = {}, S = {}> extends React.Component<P, S> {
+  private nextHookId = 0;
   public effects: Array<Function> = [];
 
   public componentDidMount(): void {
     this.effects.forEach(e => e());
+  }
+
+  public newHookId(): number {
+    return ++this.nextHookId;
   }
 }
 
