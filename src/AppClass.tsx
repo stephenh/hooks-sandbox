@@ -7,6 +7,12 @@ export class HookableComponent<P = {}, S = {}> extends React.Component<P, S> {
   private nextHookId = 0;
   public effects: Array<Function> = [];
 
+  constructor(props: any) {
+    super(props);
+    // Subclasses doing `this.state = {}` will break this...
+    this.state = {} as any;
+  }
+
   public componentDidMount(): void {
     this.effects.forEach(e => e());
   }

@@ -5,8 +5,12 @@ type Setter<T> = (t: T) => void;
 
 function useState<T>(component: HookableComponent, def?: T): [Getter<T>, Setter<T>]  {
   const hookId = component.newHookId();
-  const getter = () => (component.state && (component.state as any)[`hook-${hookId}`]) || def;
-  const setter = (v: T) => component.setState({ [`hook-${hookId}`]: v });
+  const stateKey = `hook-${hookId}`;
+  if (def) {
+    (component.state as any)[stateKey] = def;
+  }
+  const getter = () => (component.state && (component.state as any)[stateKey]);
+  const setter = (v: T) => component.setState({ [stateKey]: v });
   return [getter, setter];
 }
 
