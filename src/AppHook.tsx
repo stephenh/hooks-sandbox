@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import { useFriendStatus } from "./friendStatusHook";
 
-function App() {
+export function AppHook() {
   const isOnline = useFriendStatus("id123");
 
   return (
@@ -13,5 +13,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

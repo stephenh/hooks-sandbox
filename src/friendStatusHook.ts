@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export function useFriendStatus(friendID: string): string {
   const [isOnline, setIsOnline] = useState('offline');
