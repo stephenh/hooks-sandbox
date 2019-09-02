@@ -1,4 +1,4 @@
-import { HookableComponent } from "./AppClass";
+import { HookableComponent } from "./HookableComponent";
 
 type Getter<T> = () => T;
 type Setter<T> = (t: T) => void;
