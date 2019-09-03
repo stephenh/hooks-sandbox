@@ -14,7 +14,7 @@ import React from "react";
 export class HookableComponent<P = {}, S = {}> extends React.Component<P, S> {
 
   private nextHookId = 0;
-  public effects: Array<Function> = [];
+  private readonly effects: Array<Function> = [];
   private lastEffects: Array<Function> = [];
   public hookState: { [hookId: string]: any } = {};
 
@@ -30,12 +30,16 @@ export class HookableComponent<P = {}, S = {}> extends React.Component<P, S> {
     this.cancelAndRunEffects();
   }
 
+  public newHookId(): number {
+    return ++this.nextHookId;
+  }
+
+  public addEffect(effect: () => void): void {
+    this.effects.push(effect);
+  }
+
   private cancelAndRunEffects(): void {
     this.lastEffects.forEach(e => e());
     this.lastEffects = this.effects.map(e => e()).filter(e => e instanceof Function);
-  }
-
-  public newHookId(): number {
-    return ++this.nextHookId;
   }
 }

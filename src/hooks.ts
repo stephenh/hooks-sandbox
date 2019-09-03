@@ -39,5 +39,5 @@ export function useState<T>(component: HookableComponent, def?: T): [Getter<T>, 
  * method to push the caller's `effect` onto the list of effects to run.
  */
 export function useEffect(component: HookableComponent, effect: () => void): void {
-  component.effects.push(effect);
+  component.addEffect(effect);
 }
