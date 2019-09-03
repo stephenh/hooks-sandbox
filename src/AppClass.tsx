@@ -9,7 +9,7 @@ export class AppClass extends HookableComponent {
   public render() {
     return <div className="App">
       <header className="App-header">
-        {this.isOnline()}
+        {this.isOnline.get()}
       </header>
     </div>
   }

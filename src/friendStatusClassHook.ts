@@ -1,11 +1,11 @@
 import { HookableComponent } from "./HookableComponent";
-import { Getter, useEffect, useState } from "./hooks";
+import { State, useEffect, useState } from "./hooks";
 
-export function useFriendStatus(component: HookableComponent, friendID: string): Getter<string> {
-  const [isOnline, setIsOnline] = useState(component, 'offline');
+export function useFriendStatus(component: HookableComponent, friendID: string): State<string> {
+  const online = useState(component, 'offline');
 
   function handleStatusChange(status: string) {
-    setIsOnline(status);
+    online.set(status);
   }
 
   useEffect(component, () => {
@@ -20,5 +20,5 @@ export function useFriendStatus(component: HookableComponent, friendID: string):
     };
   });
 
-  return isOnline;
+  return online;
 }
