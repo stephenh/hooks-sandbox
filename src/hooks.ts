@@ -1,4 +1,5 @@
 import { HookableComponent } from "./HookableComponent";
+import { Context } from "react";
 
 export interface State<T> {
   get(): T;
@@ -40,4 +41,8 @@ export function useState<T>(component: HookableComponent, def?: T): State<T> {
  */
 export function useEffect(component: HookableComponent, effect: () => void): void {
   component.addEffect(effect);
+}
+
+export function useContext<T>(Context: Context<T>): T {
+  return (Context as any)._currentValue;
 }
