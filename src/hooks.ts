@@ -1,5 +1,5 @@
 import { HookableComponent } from "./HookableComponent";
-import { Context } from "react";
+import { Context, MutableRefObject } from "react";
 
 export interface State<T> {
   get(): T;
@@ -43,6 +43,23 @@ export function useEffect(component: HookableComponent, effect: () => void): voi
   component.addEffect(effect);
 }
 
+/**
+ * Emulates `useRef`.
+ *
+ * Given class-based hooks are only created once on instantiation, we don't need any
+ * magic. If anything we should just remove this, but keeping it for simplicity of porting
+ * other hooks over.
+ */
+export function useRef<T>(): MutableRefObject<T | undefined> {
+  return { current: undefined };
+}
+
+/**
+ * Emulates `useContext`.
+ *
+ * Currently doesn't re-render the component when the Context changes.
+ */
 export function useContext<T>(Context: Context<T>): T {
   return (Context as any)._currentValue;
 }
+
