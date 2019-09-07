@@ -1,4 +1,4 @@
-import { useContext, useState } from "./hooks";
+import { useContext, useEffect, useState } from "./hooks";
 import React, { Component, ReactElement } from "react";
 import { mount } from "enzyme";
 import { HookableComponent } from "./HookableComponent";
@@ -21,11 +21,33 @@ describe("hooks", () => {
     it("works", async () => {
       const c = mount(<StateTest />);
       expect(c).toIncludeText("initial");
-      c.simulate('click');
+      c.simulate("click");
       expect(c).toIncludeText("clicked");
     });
   });
+
+  describe("useEffect", () => {
+    it("works", async () => {
+      const c = new EffectTest({});
+      expect(EffectTest.effected).toEqual(0);
+
+      c.componentDidMount();
+      expect(EffectTest.effected).toEqual(1);
+
+      c.componentDidUpdate();
+      expect(EffectTest.effected).toEqual(2);
+    });
+  });
 });
+
+export class EffectTest extends HookableComponent {
+  static effected = 0;
+
+  constructor(props: object) {
+    super(props);
+    useEffect(this, () => EffectTest.effected++);
+  }
+}
 
 export class StateTest extends Component {
   private value = useState(this, "initial");
