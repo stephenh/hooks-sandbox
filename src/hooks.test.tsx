@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "./hooks";
 import React, { Component, ReactElement } from "react";
 import { mount } from "enzyme";
-import { HookableComponent } from "./HookableComponent";
 
 describe("hooks", () => {
   describe("useContext", () => {
@@ -31,21 +30,32 @@ describe("hooks", () => {
       const c = new EffectTest({});
       expect(EffectTest.effected).toEqual(0);
 
-      c.componentDidMount();
+      c.componentDidMount!();
+      expect(c.count).toEqual(1);
       expect(EffectTest.effected).toEqual(1);
 
-      c.componentDidUpdate();
+      c.componentDidUpdate!();
+      expect(c.count).toEqual(2);
       expect(EffectTest.effected).toEqual(2);
     });
   });
 });
 
-export class EffectTest extends HookableComponent {
+export class EffectTest extends Component {
   static effected = 0;
+  count = 0;
 
   constructor(props: object) {
     super(props);
     useEffect(this, () => EffectTest.effected++);
+  }
+
+  componentDidMount() {
+    this.count++;
+  }
+
+  componentDidUpdate() {
+    this.count++;
   }
 }
 

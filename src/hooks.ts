@@ -1,4 +1,3 @@
-import { HookableComponent } from "./HookableComponent";
 import { Component, Context, MutableRefObject } from "react";
 
 export interface State<T> {
@@ -7,10 +6,7 @@ export interface State<T> {
 }
 
 /**
- * Emulates `useState` against a {@link HookableComponent}.
- *
- * This uses the `HookableComponent.hookState` to hold a different slice of state
- * per useState caller.
+ * Emulates `useState` against a {@link Component}.
  *
  * It's a little different than `useState` because the return type is not `[T, Setter<T>]`
  * but `State<T>`, b/c its expected that this class-based version of the hook would be called
@@ -35,16 +31,47 @@ export function useState<T>(
 }
 
 /**
- * Emulates `useEffect` against a {@link HookableComponent}.
+ * Emulates `useEffect` against a {@link Component}.
  *
- * Most of this is deferred to the HookableComponent implementation, this is just a wrapper
+ * Most of this is deferred to the EffectsHolder implementation, this is just a wrapper
  * method to push the caller's `effect` onto the list of effects to run.
  */
-export function useEffect(
-  component: HookableComponent,
-  effect: () => void
-): void {
-  component.addEffect(effect);
+export function useEffect(component: Component, effect: () => void): void {
+  EffectsHolder.for(component).effects.push(effect);
+}
+
+class EffectsHolder {
+  readonly effects: Array<Function> = [];
+  lastEffects: Array<Function> = [];
+
+  static for(component: any): EffectsHolder {
+    if (component.__effectsHolder === undefined) {
+      component.__effectsHolder = new EffectsHolder(component);
+    }
+    return component.__effectsHolder;
+  }
+
+  constructor(component: Component) {
+    wrap(component, "componentDidMount", this.cancelAndRunEffects);
+    wrap(component, "componentDidUpdate", this.cancelAndRunEffects);
+  }
+
+  private cancelAndRunEffects = () => {
+    this.lastEffects.forEach(e => e());
+    this.lastEffects = this.effects
+      .map(e => e())
+      .filter(e => e instanceof Function);
+  };
+}
+
+function wrap<T, K extends keyof T>(o: T, methodName: K, fn: () => void) {
+  const original = o[methodName];
+  o[methodName] = function(this: T) {
+    fn();
+    if (original) {
+      return (original as any).apply(this, arguments);
+    }
+  } as any;
 }
 
 /**
