@@ -1,5 +1,5 @@
 import { HookableComponent } from "./HookableComponent";
-import { Context, MutableRefObject } from "react";
+import { Component, Context, MutableRefObject } from "react";
 
 export interface State<T> {
   get(): T;
@@ -16,18 +16,19 @@ export interface State<T> {
  * but `State<T>`, b/c its expected that this class-based version of the hook would be called
  * in the component constructor/field initialization and not in the middle of `render`.
  */
-export function useState<T>(component: HookableComponent, def?: T): State<T> {
-  const hookId = component.newHookId();
-  const stateKey = `hook-${hookId}`;
-  if (def) {
-    component.hookState[stateKey] = def;
-  }
+export function useState<T>(component: Component): State<T | undefined>;
+export function useState<T>(component: Component, initial: T): State<T>;
+export function useState<T>(
+  component: Component,
+  initial?: T
+): State<T | undefined> {
+  let value: T | undefined = initial;
   return {
-    get(): T {
-      return component.hookState[stateKey];
+    get(): T | undefined {
+      return value;
     },
     set(v: T): void {
-      component.hookState[stateKey] = v;
+      value = v;
       component.forceUpdate();
     }
   };
@@ -39,7 +40,10 @@ export function useState<T>(component: HookableComponent, def?: T): State<T> {
  * Most of this is deferred to the HookableComponent implementation, this is just a wrapper
  * method to push the caller's `effect` onto the list of effects to run.
  */
-export function useEffect(component: HookableComponent, effect: () => void): void {
+export function useEffect(
+  component: HookableComponent,
+  effect: () => void
+): void {
   component.addEffect(effect);
 }
 
@@ -62,4 +66,3 @@ export function useRef<T>(): MutableRefObject<T | undefined> {
 export function useContext<T>(Context: Context<T>): T {
   return (Context as any)._currentValue;
 }
-

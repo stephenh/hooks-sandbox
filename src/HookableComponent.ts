@@ -13,10 +13,8 @@ import React from "react";
  */
 export class HookableComponent<P = {}, S = {}> extends React.Component<P, S> {
 
-  private nextHookId = 0;
   private readonly effects: Array<Function> = [];
   private lastEffects: Array<Function> = [];
-  public hookState: { [hookId: string]: any } = {};
 
   constructor(props: any) {
     super(props);
@@ -28,10 +26,6 @@ export class HookableComponent<P = {}, S = {}> extends React.Component<P, S> {
 
   public componentDidUpdate(): void {
     this.cancelAndRunEffects();
-  }
-
-  public newHookId(): number {
-    return ++this.nextHookId;
   }
 
   public addEffect(effect: () => void): void {
