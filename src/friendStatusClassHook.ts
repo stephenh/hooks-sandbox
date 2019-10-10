@@ -1,21 +1,24 @@
-import { HookableComponent } from "./HookableComponent";
-import { State, useEffect, useState } from "./hooks";
+import { Component } from "react";
+import { State, newEffect, newState } from "./classHooks";
 
-export function useFriendStatus(component: HookableComponent, friendID: string): State<string> {
-  const online = useState(component, 'offline');
+export function useFriendStatus(
+  component: Component,
+  friendID: string
+): State<string> {
+  const online = newState(component, "offline");
 
   function handleStatusChange(status: string) {
     online.set(status);
   }
 
-  useEffect(component, () => {
-    console.log('Subscribing');
+  newEffect(component, () => {
+    console.log("Subscribing");
     const timer = setInterval(() => {
       handleStatusChange(`${friendID} ${new Date().getTime().toString()}`);
     }, 1000);
 
     return () => {
-      console.log('Unsubscribing');
+      console.log("Unsubscribing");
       clearInterval(timer);
     };
   });

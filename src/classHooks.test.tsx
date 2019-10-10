@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from "./hooks";
 import React, { Component, ReactElement } from "react";
 import { mount } from "enzyme";
+import { getContext, newEffect, newState } from "./classHooks";
 
 describe("hooks", () => {
-  describe("useContext", () => {
+  describe("getContext", () => {
     it("works", () => {
       const foo = mount(<Foo />);
       expect(foo).toMatchInlineSnapshot(`
@@ -16,16 +16,20 @@ describe("hooks", () => {
     });
   });
 
-  describe("useState", () => {
+  describe("newState", () => {
     it("works", async () => {
       const c = mount(<StateTest />);
-      expect(c).toIncludeText("initial");
+      // FIXME: Property 'toIncludeText' does not exist on type
+      // 'Matchers<ReactWrapper<any, Readonly<{}>, Component<{}, {}, any>>>'
+      //expect(c).toIncludeText("initial");
+      expect(c.text()).toMatch("initial");
       c.simulate("click");
-      expect(c).toIncludeText("clicked");
+      //expect(c).toIncludeText("clicked");
+      expect(c.text()).toMatch("clicked");
     });
   });
 
-  describe("useEffect", () => {
+  describe("newEffect", () => {
     it("works", async () => {
       const c = new EffectTest({});
       expect(EffectTest.effected).toEqual(0);
@@ -47,7 +51,7 @@ export class EffectTest extends Component {
 
   constructor(props: object) {
     super(props);
-    useEffect(this, () => EffectTest.effected++);
+    newEffect(this, () => EffectTest.effected++);
   }
 
   componentDidMount() {
@@ -60,7 +64,7 @@ export class EffectTest extends Component {
 }
 
 export class StateTest extends Component {
-  private value = useState(this, "initial");
+  private value = newState(this, "initial");
 
   public render(): ReactElement {
     return <button onClick={this.onClick}>{this.value.get()}</button>;
@@ -75,7 +79,7 @@ type My = { name: string };
 const MyContext = React.createContext<My>({ name: "fred" });
 
 export class Foo extends Component {
-  private my = useContext(MyContext);
+  private my = getContext(MyContext);
 
   public render() {
     return <div>{this.my.name}</div>;
